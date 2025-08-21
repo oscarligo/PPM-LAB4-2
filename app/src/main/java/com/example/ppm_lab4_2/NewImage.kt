@@ -20,36 +20,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ppm_lab4_2.ui.theme.PPMLAB42Theme
 import androidx.compose.ui.graphics.Color
-// box
 import androidx.compose.foundation.background
 import androidx.compose.ui.Alignment
-//height
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-
 import androidx.compose.material3.TextField
-//mutablestateof
 import androidx.compose.runtime.mutableStateOf
-
 import androidx.navigation.NavController
-
 import androidx.compose.material3.IconButton
-// CenteredTopAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
-
-//arrow back
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.material3.SnackbarHost
@@ -62,9 +50,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddImageScreen(navController: NavController) {
 
-    var url = remember { mutableStateOf("") }
-    var title = remember { mutableStateOf("") }
-    var description = remember { mutableStateOf("") }
+    val url = remember { mutableStateOf("") }
+    val title = remember { mutableStateOf("") }
+    val description = remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -223,9 +211,9 @@ fun AddImageScreen(navController: NavController) {
 @Composable
 fun PreviewAddImageScreen() {
 
-    var url = remember { mutableStateOf("") }
-    var title = remember { mutableStateOf("") }
-    var description = remember { mutableStateOf("") }
+    val url = remember { mutableStateOf("") }
+    val title = remember { mutableStateOf("") }
+    val description = remember { mutableStateOf("") }
 
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
