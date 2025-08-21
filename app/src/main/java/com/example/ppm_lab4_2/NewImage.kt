@@ -1,0 +1,326 @@
+package com.example.ppm_lab4_2
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.paddingFromBaseline
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.ppm_lab4_2.ui.theme.PPMLAB42Theme
+import androidx.compose.ui.graphics.Color
+// box
+import androidx.compose.foundation.background
+import androidx.compose.ui.Alignment
+//height
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+
+import androidx.compose.material3.TextField
+//mutablestateof
+import androidx.compose.runtime.mutableStateOf
+
+import androidx.navigation.NavController
+
+import androidx.compose.material3.IconButton
+// CenteredTopAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+
+//arrow back
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.SnackbarHost
+import kotlinx.coroutines.launch
+
+
+
+
+@ExperimentalMaterial3Api
+@Composable
+fun AddImageScreen(navController: NavController) {
+
+    var url = remember { mutableStateOf("") }
+    var title = remember { mutableStateOf("") }
+    var description = remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "Agregar una Imagen", fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                navigationIcon = {
+                    IconButton(onClick = {navController.popBackStack()}) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                }
+            )
+        },
+
+        bottomBar = {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.height(40.dp)
+            ) {
+
+            }
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    if (url.value.isNotBlank() &&
+                        title.value.isNotBlank() &&
+                        description.value.isNotBlank()
+                    ) {
+                        val newId = (images.maxOfOrNull { it.id } ?: 1) + 1
+                        images.add(
+                            ImageClass(
+                                id = newId,
+                                title = title.value,
+                                description = description.value,
+                                imageUrl = url.value
+                            )
+                        )
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Imagen agregada correctamente")
+                        }
+
+                        url.value = ""
+                        title.value = ""
+                        description.value = ""
+                        navController.popBackStack()
+
+                    }
+
+                    else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("La información no es válida")
+                        }
+                    }
+                },
+                modifier = Modifier.width(300.dp).paddingFromBaseline(
+                    top = 10.dp,
+                    bottom = 100.dp
+                ),
+                shape = RoundedCornerShape(40.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Row {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Agregar Imagen",
+                        modifier = Modifier.size(30.dp)
+                    )
+
+                    Text(
+                        text = "Agregar Imagen",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(start = 10.dp)
+                    )
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { paddingValues ->
+
+
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            color =  MaterialTheme.colorScheme.background
+        ) {
+
+            Column {
+                TextField(
+                    value = url.value,
+                    onValueChange = { url.value = it },
+                    label = { Text("URL de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, start = 16.dp, end = 16.dp)
+                        .height(120.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+
+                TextField(
+                    value = title.value,
+                    onValueChange = { title.value = it },
+                    label = { Text("Título de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+
+                TextField(
+                    value = description.value,
+                    onValueChange = { description.value = it },
+                    label = { Text("Descripción de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .height(100.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+            }
+
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Preview
+@Composable
+fun PreviewAddImageScreen() {
+
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        "Agregar una Imagen", fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                navigationIcon = {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                }
+            )
+        },
+
+        bottomBar = {
+            BottomAppBar(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.height(40.dp)
+            ) {
+
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {  },
+                modifier = Modifier.width(300.dp).paddingFromBaseline(
+                    top = 10.dp,
+                    bottom = 100.dp
+                ),
+                shape = RoundedCornerShape(40.dp),
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.primary
+            ) {
+                Row {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Agregar Imagen",
+                        modifier = Modifier.size(30.dp)
+                    )
+
+                    Text(
+                        text = "Agregar Imagen",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(start = 10.dp)
+                    )
+                }
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { paddingValues ->
+
+        var url = remember { mutableStateOf("") }
+        var titulo = remember { mutableStateOf("") }
+        var descripcion = remember { mutableStateOf("") }
+
+        Surface(
+            modifier = Modifier.fillMaxSize().padding(paddingValues),
+            color =  MaterialTheme.colorScheme.background
+        ) {
+            Column {
+                TextField(
+                    value = url.value,
+                    onValueChange = { url.value = it },
+                    label = { Text("URL de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 100.dp, start = 16.dp, end = 16.dp)
+                        .height(120.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+
+                TextField(
+                    value = titulo.value,
+                    onValueChange = { titulo.value = it },
+                    label = { Text("Título de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+
+                TextField(
+                    value = descripcion.value,
+                    onValueChange = { descripcion.value = it },
+                    label = { Text("Descripción de la Imagen") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                        .height(100.dp)
+                        .background(Color.White, RoundedCornerShape(40.dp))
+                )
+            }
+
+        }
+    }
+
+}
