@@ -108,9 +108,13 @@ fun AddImageScreen(navController: NavController) {
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+
+                    // que tambien valide elementos unicos
                     if (url.value.isNotBlank() &&
                         title.value.isNotBlank() &&
                         description.value.isNotBlank()
+                        && images.none { it.imageUrl == url.value }
+                        && images.none { it.title == title.value }
                     ) {
                         val newId = (images.maxOfOrNull { it.id } ?: 1) + 1
                         images.add(
@@ -131,6 +135,10 @@ fun AddImageScreen(navController: NavController) {
                         description.value = ""
                         navController.popBackStack()
 
+                    } else if (images.any { it.imageUrl == url.value } || images.any { it.title == title.value }) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("La URL ya existe o el título ya está en uso")
+                        }
                     }
 
                     else {
@@ -215,6 +223,13 @@ fun AddImageScreen(navController: NavController) {
 @Composable
 fun PreviewAddImageScreen() {
 
+    var url = remember { mutableStateOf("") }
+    var title = remember { mutableStateOf("") }
+    var description = remember { mutableStateOf("") }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+
     Scaffold (
         topBar = {
             CenterAlignedTopAppBar(
@@ -229,7 +244,7 @@ fun PreviewAddImageScreen() {
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -248,9 +263,43 @@ fun PreviewAddImageScreen() {
 
             }
         },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState)
+        },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  },
+                onClick = {
+                    if (url.value.isNotBlank() &&
+                        title.value.isNotBlank() &&
+                        description.value.isNotBlank()
+                    ) {
+                        val newId = (images.maxOfOrNull { it.id } ?: 1) + 1
+                        images.add(
+                            ImageClass(
+                                id = newId,
+                                title = title.value,
+                                description = description.value,
+                                imageUrl = url.value
+                            )
+                        )
+
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Imagen agregada correctamente")
+                        }
+
+                        url.value = ""
+                        title.value = ""
+                        description.value = ""
+
+
+                    }
+
+                    else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar("La información no es válida")
+                        }
+                    }
+                },
                 modifier = Modifier.width(300.dp).paddingFromBaseline(
                     top = 10.dp,
                     bottom = 100.dp
@@ -278,14 +327,12 @@ fun PreviewAddImageScreen() {
         floatingActionButtonPosition = FabPosition.Center
     ) { paddingValues ->
 
-        var url = remember { mutableStateOf("") }
-        var titulo = remember { mutableStateOf("") }
-        var descripcion = remember { mutableStateOf("") }
 
         Surface(
             modifier = Modifier.fillMaxSize().padding(paddingValues),
             color =  MaterialTheme.colorScheme.background
         ) {
+
             Column {
                 TextField(
                     value = url.value,
@@ -299,8 +346,8 @@ fun PreviewAddImageScreen() {
                 )
 
                 TextField(
-                    value = titulo.value,
-                    onValueChange = { titulo.value = it },
+                    value = title.value,
+                    onValueChange = { title.value = it },
                     label = { Text("Título de la Imagen") },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -309,8 +356,8 @@ fun PreviewAddImageScreen() {
                 )
 
                 TextField(
-                    value = descripcion.value,
-                    onValueChange = { descripcion.value = it },
+                    value = description.value,
+                    onValueChange = { description.value = it },
                     label = { Text("Descripción de la Imagen") },
                     modifier = Modifier
                         .fillMaxWidth()
