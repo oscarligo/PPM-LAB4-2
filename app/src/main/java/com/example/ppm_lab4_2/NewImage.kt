@@ -71,7 +71,7 @@ fun AddImageScreen(navController: NavController) {
                     titleContentColor = MaterialTheme.colorScheme.primary
                 ),
                 navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
+                    IconButton(onClick = {navController.navigate( "images") }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Localized description"
@@ -97,7 +97,6 @@ fun AddImageScreen(navController: NavController) {
             FloatingActionButton(
                 onClick = {
 
-                    // que tambien valide elementos unicos
                     if (url.value.isNotBlank() &&
                         title.value.isNotBlank() &&
                         description.value.isNotBlank()
@@ -121,17 +120,11 @@ fun AddImageScreen(navController: NavController) {
                         url.value = ""
                         title.value = ""
                         description.value = ""
-                        navController.popBackStack()
+                        navController.navigate("images")
 
-                    } else if (images.any { it.imageUrl == url.value } || images.any { it.title == title.value }) {
+                    } else {
                         scope.launch {
-                            snackbarHostState.showSnackbar("La URL ya existe o el título ya está en uso")
-                        }
-                    }
-
-                    else {
-                        scope.launch {
-                            snackbarHostState.showSnackbar("La información no es válida")
+                            snackbarHostState.showSnackbar("Información Inválida")
                         }
                     }
                 },

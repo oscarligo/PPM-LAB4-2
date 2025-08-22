@@ -165,7 +165,6 @@ fun ImagesScreen(navController: NavController) {
 @Composable
 fun PreviewImagesScreen() {
 
-
         Scaffold (
             topBar = {
                 TopAppBar(
